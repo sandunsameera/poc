@@ -1,0 +1,8 @@
+node_modules
+functions
+
+# Local Netlify folder
+.netlify
+dist
+.netlify
+netlify.toml

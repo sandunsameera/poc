@@ -15,10 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const ws_1 = __importDefault(require("ws"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 // Connect to MongoDB
-mongoose_1.default.connect('mongodb://localhost/mydb', {});
+const uri = "mongodb+srv://sandun:sandun@cluster0.sjboy.mongodb.net/?retryWrites=true&w=majority";
+mongoose_1.default.connect(uri, {});
 const db = mongoose_1.default.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 // Define a MongoDB schema and model
@@ -38,6 +40,15 @@ app.post('/data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const myData = new MyModel(data);
         yield myData.save();
         res.send(myData);
+    }
+    catch (error) {
+        console.error(error);
+        res.sendStatus(500);
+    }
+}));
+app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        res.send("Root poc be");
     }
     catch (error) {
         console.error(error);

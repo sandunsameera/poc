@@ -1,12 +1,15 @@
 import express from 'express';
 import WebSocket from 'ws';
 import mongoose from 'mongoose';
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
 const app = express();
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost/mydb', {});
+const uri = "mongodb+srv://sandun:sandun@cluster0.sjboy.mongodb.net/?retryWrites=true&w=majority";
+mongoose.connect(uri, {});
+
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -30,6 +33,15 @@ app.post('/data', async (req, res) => {
         const myData = new MyModel(data);
         await myData.save();
         res.send(myData);
+    } catch (error) {
+        console.error(error);
+        res.sendStatus(500);
+    }
+});
+
+app.get('/', async (req, res) => {
+    try {
+        res.send("Root poc be");
     } catch (error) {
         console.error(error);
         res.sendStatus(500);
