@@ -2,9 +2,11 @@ import express from 'express';
 import WebSocket from 'ws';
 import mongoose from 'mongoose';
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Connect to MongoDB
 const uri = "mongodb+srv://sandun:sandun@cluster0.sjboy.mongodb.net/?retryWrites=true&w=majority";
