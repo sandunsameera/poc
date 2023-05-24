@@ -8,6 +8,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+const wsPort = process.env.WS_PORT || 8080
+
+
 // Connect to MongoDB
 const uri = "mongodb+srv://sandun:sandun@cluster0.sjboy.mongodb.net/?retryWrites=true&w=majority";
 mongoose.connect(uri, {});
@@ -43,6 +46,7 @@ app.post('/data', async (req, res) => {
 
 app.get('/', async (req, res) => {
     try {
+        console.log(wsPort)
         res.send("Root poc be");
     } catch (error) {
         console.error(error);
@@ -51,7 +55,7 @@ app.get('/', async (req, res) => {
 });
 
 // Define a WebSocket server
-const wsServer = new WebSocket.Server({ port: 8080 });
+const wsServer = new WebSocket.Server({ port: Number(wsPort) });
 
 wsServer.on('connection', (ws) => {
     console.log('WebSocket client connected');
