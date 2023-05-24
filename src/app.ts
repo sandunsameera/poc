@@ -69,7 +69,7 @@ wsServer.on('connection', (ws) => {
 });
 
 // Start the server
-const PORT = 3001;
+const PORT = process.env.PORT || 3000
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
