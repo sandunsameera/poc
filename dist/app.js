@@ -13,11 +13,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const ws_1 = __importDefault(require("ws"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const cors = require('cors');
 const app = (0, express_1.default)();
+const http = require('http').Server(app);
+const io = require('socket.io')(http, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+    },
+});
 app.use(express_1.default.json());
+app.use(cors());
+const wsPort = process.env.WS_PORT || 8080;
 // Connect to MongoDB
 const uri = "mongodb+srv://sandun:sandun@cluster0.sjboy.mongodb.net/?retryWrites=true&w=majority";
 mongoose_1.default.connect(uri, {});
@@ -48,6 +57,7 @@ app.post('/data', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 }));
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log(wsPort);
         res.send("Root poc be");
     }
     catch (error) {
@@ -55,24 +65,26 @@ app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.sendStatus(500);
     }
 }));
-// Define a WebSocket server
-const wsServer = new ws_1.default.Server({ port: 8080 });
-wsServer.on('connection', (ws) => {
-    console.log('WebSocket client connected');
-    ws.on('message', (message) => __awaiter(void 0, void 0, void 0, function* () {
+io.on('connection', (socket) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('A user connected');
+    // Handle 'message' events
+    socket.on('message', (message) => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield MyModel.find().sort({ $natural: -1 }).limit(15);
         const data = [];
         for (const resultElement of result) {
             data.push(resultElement);
         }
-        ws.send(JSON.stringify(data), { binary: false });
+        io.emit(JSON.stringify(data));
     }));
-    ws.on('close', () => {
+    // Handle 'disconnect' events
+    socket.on('disconnect', () => {
         console.log('WebSocket client disconnected');
     });
-});
+}));
+// Set the port to listen on
+const port = process.env.PORT || 3000;
 // Start the server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+http.listen(3000, () => {
+    console.log(`Websocket Server is running on port ${port}`);
 });

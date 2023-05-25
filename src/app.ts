@@ -1,10 +1,17 @@
 import express from 'express';
-import WebSocket, {Server} from 'ws';
 import mongoose from 'mongoose';
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors');
-
 const app = express();
+
+const http = require('http').Server(app);
+const io = require('socket.io')(http,{
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+    },
+});
+
 app.use(express.json());
 app.use(cors());
 
@@ -54,29 +61,31 @@ app.get('/', async (req, res) => {
     }
 });
 
-// Define a WebSocket server
-const wsServer = new WebSocket.Server({});
-
-wsServer.on('connection', (ws) => {
-    console.log('WebSocket client connected');
-
-    ws.on('message', async (message) => {
+io.on('connection', async (socket:any) => {
+    console.log('A user connected');
+    // Handle 'message' events
+    socket.on('message', async (message:any) => {
         const result  = await MyModel.find().sort({$natural: -1 }).limit(15);
         const data = [];
         for (const resultElement of result) {
             data.push(resultElement)
         }
-        ws.send(JSON.stringify(data), {binary:false});
+        io.emit(JSON.stringify(data));
     });
 
-    ws.on('close', () => {
+    // Handle 'disconnect' events
+    socket.on('disconnect', () => {
         console.log('WebSocket client disconnected');
     });
 });
 
+// Set the port to listen on
+const port = process.env.PORT || 3000;
+
+
 // Start the server
 const PORT = process.env.PORT || 3000
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+http.listen(3000, () => {
+    console.log(`Websocket Server is running on port ${port}`);
 });
