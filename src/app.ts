@@ -1,5 +1,5 @@
 import express from 'express';
-import WebSocket from 'ws';
+import WebSocket, {Server} from 'ws';
 import mongoose from 'mongoose';
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors');
@@ -55,7 +55,7 @@ app.get('/', async (req, res) => {
 });
 
 // Define a WebSocket server
-const wsServer = new WebSocket.Server();
+const wsServer = new WebSocket.Server({port: Number(wsPort)});
 
 wsServer.on('connection', (ws) => {
     console.log('WebSocket client connected');
