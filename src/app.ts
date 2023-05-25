@@ -55,7 +55,7 @@ app.get('/', async (req, res) => {
 });
 
 // Define a WebSocket server
-const wsServer = new WebSocket.Server({port: Number(wsPort)});
+const wsServer = new WebSocket.Server();
 
 wsServer.on('connection', (ws) => {
     console.log('WebSocket client connected');
