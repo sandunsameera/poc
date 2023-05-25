@@ -83,9 +83,6 @@ io.on('connection', async (socket:any) => {
 const port = process.env.PORT || 3000;
 
 
-// Start the server
-const PORT = process.env.PORT || 3000
-
-http.listen(3000, () => {
+http.listen(port, () => {
     console.log(`Websocket Server is running on port ${port}`);
 });
